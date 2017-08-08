@@ -4,7 +4,7 @@
 var CACHE_VERSION = 'app-v1'; // 缓存文件的版本
 var CACHE_FILES = [ // 需要缓存的页面文件
     'js/app.js',
-    'css/styles.css'
+    'css/style.css'
 ];
 
 
