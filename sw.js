@@ -10,23 +10,31 @@ var CACHE_FILES = [ // 需要缓存的页面文件
 
 self.addEventListener('install', function (event) { // 监听worker的install事件
     event.waitUntil( // 延迟install事件直到缓存初始化完成
-        caches.open(CACHE_VERSION)
-            .then(function (cache) {
-                console.log('Opened cache');
-                return cache.addAll(CACHE_FILES);
-            })
+        new Promise(function() {
+            caches.open(CACHE_VERSION)
+                .then(function (cache) {
+                    console.log('Opened cache');
+                    return cache.addAll(CACHE_FILES);
+                })
+            self.skipWaiting();//更新sw时
+        })
     );
 });
 
 self.addEventListener('activate', function (event) { // 监听worker的activate事件
     event.waitUntil( // 延迟activate事件直到
+        Promise.all([
+        // 更新客户端
+
+        self.clients.claim(),
         caches.keys().then(function(keys){
             return Promise.all(keys.map(function(key, i){ // 清除旧版本缓存
                 if(key !== CACHE_VERSION){
                     return caches.delete(keys[i]);
                 }
             }))
-        })
+        })]
+    )
     )
 });
 
