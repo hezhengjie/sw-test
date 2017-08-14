@@ -49,19 +49,22 @@ self.addEventListener('fetch', function (event) { // 截取页面的资源请求
 });
 
 function requestBackend(event){  // 请求备份操作
-    var url = event.request.clone();
-    return fetch(url).then(function(res){ // 请求线上资源
-        //if not a valid response send the error
-        if(!res || res.status !== 200 || res.type !== 'basic'){
-            return res;
+    var request = event.request.clone(); // 把原始请求拷过来
+    return fetch(request).then(function (httpRes) {
+
+        // http请求的返回已被抓到，可以处置了。
+
+        // 请求失败了，直接返回失败的结果就好了。。
+        if (!httpRes || httpRes.status !== 200) {
+            return httpRes;
         }
 
-        var response = res.clone();
-
-        caches.open(CACHE_VERSION).then(function(cache){ // 缓存从线上获取的资源
-            cache.put(event.request, response);
+        // 请求成功的话，将请求缓存起来。
+        var responseClone = httpRes.clone();
+        caches.open(CACHE_VERSION).then(function (cache) {
+            cache.put(event.request, responseClone);
         });
 
-        return res;
-    })
+        return httpRes;
+    });
 }
