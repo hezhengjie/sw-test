@@ -25,7 +25,6 @@ self.addEventListener('activate', function (event) { // 监听worker的activate�
     event.waitUntil( // 延迟activate事件直到
         Promise.all([
         // 更新客户端
-
         self.clients.claim(),
         caches.keys().then(function(keys){
             return Promise.all(keys.map(function(key, i){ // 清除旧版本缓存
