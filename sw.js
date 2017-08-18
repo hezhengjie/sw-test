@@ -38,9 +38,11 @@ self.addEventListener('activate', function (event) { // 监听worker的activate�
 });
 
 self.addEventListener('fetch', function (event) { // 截取页面的资源请求
+    console.log('Handling fetch event for', event.request.url);
     event.respondWith( // 返回页面的资源请求
         caches.match(event.request).then(function(res){ // 判断缓存是否命中
             if(res){  // 返回缓存中的资源
+                console.log('Found response in cache:', response);
                 return res;
             }
             requestBackend(event); // 执行请求备份操作
@@ -53,8 +55,7 @@ function requestBackend(event){  // 请求备份操作
     return fetch(request).then(function (httpRes) {
 
         // http请求的返回已被抓到，可以处置了。
-        console.log(httpRes);
-
+        console.log('Response from network is:', httpRes);
         // 请求失败了，直接返回失败的结果就好了。。
         if (!httpRes || httpRes.status !== 200) {
             return httpRes;
